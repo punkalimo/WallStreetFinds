@@ -89,6 +89,7 @@ const resetPassword = (req, res) =>{
         resetPasswordExpires: {$gt: Date.now()}
     })
     .then((user)=>{
+        if(!user) return res.status(401).json({message: 'Password reset token is invalid or has expired.'});
         user.password = req.body.password;
         user.resetPasswordToken= undefined;
         user.resetPasswordExpires= undefined;
