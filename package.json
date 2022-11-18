@@ -1,0 +1,40 @@
+{
+  "name": "wallstreetfinds",
+  "version": "1.0.0",
+  "description": "Wall Street Finds BackEnd API",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "next build",
+    "lint": "next lint",
+    "backend": "nodemon backend/server.js",
+    "client": "next dev",
+    "dev": "concurrently \"npm run backend\" \"npm run client\""
+  },
+  "author": "Pashani Jaulani & Peter Beeshop",
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^7.4.0",
+    "bcrypt": "^5.1.0",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-async-handler": "^1.2.0",
+    "express-session": "^1.17.3",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.7.2",
+    "nodemon": "^2.0.20",
+    "passport": "^0.6.0",
+    "passport-google-oauth": "^2.0.0",
+    "@types/node": "18.11.9",
+    "@types/react": "18.0.25",
+    "@types/react-dom": "18.0.8",
+    "eslint": "8.27.0",
+    "eslint-config-next": "13.0.3",
+    "next": "13.0.3",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "sass": "^1.56.1",
+    "typescript": "4.8.4"
+  }
+}

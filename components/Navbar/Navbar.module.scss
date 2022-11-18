@@ -1,0 +1,44 @@
+@import "../../assets/global-styles/theme.scss";
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #474D59;
+    padding-left: 25px;
+    padding-right: 25px;
+
+    h2 {
+        color: $primary-color;
+    }
+
+    ul {
+        width: 40%;
+        display: flex;
+        justify-content: space-between ;
+        list-style: none;
+       
+        
+        li {
+            color: $light-text;
+            cursor: pointer;
+            &:hover {
+                color: $active-link;
+            }
+        }
+        
+    }
+}
+
+.buttonContainer {
+    display: flex;
+    justify-content: space-between;
+    width: 10%;
+
+    a {
+        color: $light-text;
+        &:hover {
+            color: $active-link;
+        }
+    }
+}

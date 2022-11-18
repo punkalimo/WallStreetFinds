@@ -1,0 +1,36 @@
+/* || Colors  */
+
+// Color Definition
+$light-green: #89B93F;
+$dark-green: #437000;
+$white: #ffffff;
+$black: #000000;
+$dark-grey: #3A444B;
+$light-slate: #8c8ca1;
+$cherry-red: #ff3658;
+$active-link: #6FA61A;
+
+// Color Assignment
+$primary-color: $light-green;
+$secondary-color: $dark-green;
+$background-color: $dark-grey;
+$light-text: $white;
+$active-link: $active-link;
+// $light-background-color: $cloud-white-light-foreground;
+// $hairlines-color: $dorian;
+// $headings-color: $onyx;
+// $dark-text-color: $onyx;
+// $body-text-color: $slate;
+$deemphasized-text-color: $light-slate;
+$error-color: $cherry-red;
+
+
+/* || Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+// Size
+$font-40: 40px;
+$font-24: 24px;
+$font-20: 20px;
+$font-16: 16px;
+$font-14: 14px;
