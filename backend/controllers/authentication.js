@@ -1,15 +1,33 @@
 const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 const asyncHandler = require('express-async-handler');
-const crypto = require('crypto')
+const crypto = require('crypto');
 
 const maxAge = 3 * 24 * 60 * 60;
 
 const generateToken = (id)=>{
-    return jwt.sign( {id}, process.env.SECRET_KEY, {
-        expiresIn: maxAge,
-    } );
+    const token = jwt.sign({ id }, process.env.SECRET_KEY, {
+		algorithm: "HS256",
+		expiresIn: maxAge,
+	});
+    console.log(token)
+    return token;
 };
+
+const checkToken =(req, res, next)=>{
+    const header = req.header['Authorization'];
+
+    if(typeof header !== 'undefined'){
+        const bearer = header.split(' ');
+        const token = bearer[1];
+
+        req.token = token;
+        next();
+    } else {
+        res.status(403);
+    }
+}
+
 
 const registerUser = asyncHandler( async(req, res)=>{
     const { firstname, lastname, email, password} = req.body;
@@ -45,17 +63,43 @@ const authUser = asyncHandler( async (req, res)=>{
         throw new Error('Invalid Email Entered');
     }
     if(user &&( await user.matchPassword(password))){
-        const token = generateToken(user._id);
-        res.cookie('jwt', token,{
-            httpOnly: true,
-            maxAge: maxAge * 1000,
-        });
-        res.status(200).json({
+        const userID = user._id;
+        const jwtExpirySeconds = 300
+        const token = jwt.sign({ userID } , process.env.SECRET_KEY, {
+		algorithm: "HS256",
+		expiresIn: jwtExpirySeconds,
+	});
+    console.log(token);
+    res.cookie("token", token, { maxAge: jwtExpirySeconds * 1000 })
+	res.end();
+
+       //res.redirect('/profile')
+        /*res.status(200).json({
             firstname: user.firstname,
             id: user._id
-        })
+        });*/
     }
 });
+
+const profile = (req, res)=>{
+    jwt.verify(req.cookies.token, process.env.SECRET_KEY, async (err, decoded)=>{
+        if(err){
+            console.log(err);
+            res.sendStatus(500);
+            return;
+        }
+       const user = await User.findById(decoded.userID);
+        if(user){
+            res.status(200).json({
+                firstname: user.firstname,
+                lastnme: user.lastname,
+                email: user.email
+            })
+        }
+        res.send(decoded)
+    })
+}
+
 
 const recover = async (req, res)=>{
     const email = req.body.email;
@@ -83,6 +127,11 @@ const reset = (req, res)=>{
     .catch(error => res.status(500).json({message: error.message})); 
 };
 
+const logout = async (req, res)=>{
+    res.cookie('token', '', {maxAge: 0});
+    res.end();
+}
+
 const resetPassword = (req, res) =>{
     User.findOne({
         resetPasswordToken: req.params.token,
@@ -100,4 +149,4 @@ const resetPassword = (req, res) =>{
     })
 };
 
-module.exports= {registerUser, authUser, recover, reset, resetPassword};
+module.exports= {registerUser, authUser, recover, reset, resetPassword, profile, checkToken, logout};
