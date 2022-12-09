@@ -12,7 +12,10 @@ ConnectDB();
 
 
 app.use(bodyParser.json());
-app.use(cors);
+app.use(cors({
+    origin: 'http://localhost:3000',
+    methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH']
+}));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookies());
 app.use(express.json());
