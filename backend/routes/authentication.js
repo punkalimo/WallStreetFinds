@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { registerUser, authUser, recover, resetPassword,reset, profile, checkToken, logout} = require('../controllers/authentication');
+const { registerUser, authUser, recover, resetPassword,reset, profile, logout} = require('../controllers/authentication');
 const {nasdaq, stockSearch, addToWatchList } = require('../stock/screener')
 router.route('/signup').post(registerUser);
 router.route('/login').post(authUser);
@@ -15,6 +15,7 @@ router.route('/screener').post(stockSearch)
 router.route('/profile').get(profile);
 router.route('/logout').get(logout);
 router.route('/addwatchlist').post(addToWatchList)
+router.route('/stock/search').post(stockSearch);
 
 
 module.exports = router;

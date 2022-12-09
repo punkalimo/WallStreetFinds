@@ -96,7 +96,6 @@ const profile = (req, res)=>{
                 email: user.email
             })
         }
-        res.send(decoded)
     })
 }
 

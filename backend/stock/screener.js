@@ -3,9 +3,27 @@ const User = require('../models/userModel');
 const yahooFinance = require('yahoo-finance');
 const asyncHandler = require('express-async-handler');
 const jwt = require('jsonwebtoken');
+const axios = require('axios');
 const nasdaq= async (req, res)=>{
     let url = 'http://api.nasdaq.com/api/screener/stocks?tableonly=true&limit=25&offset=0&exchange=%s&download=true';
-    fetch(url)
+    axios.get(url)
+    .then((response)=>{
+        res.send(response)
+    })
+    .then(function(myJson) {
+        const data= [];
+        let stockList = myJson.data.rows;
+        stockList.forEach(stock => {
+            for(let key in stock){
+              data.push(`${key}:${stock[key]}`)
+            }
+            data.push(' ');
+        });
+        res.send(stockList);
+    });
+    
+    
+    /*fetch(url)
     .then(function(response) {
         return response.json();
     })
@@ -19,11 +37,12 @@ const nasdaq= async (req, res)=>{
             data.push(' ');
         });
         res.send(stockList);
-    });
+    });*/
 }
 
 const stockSearch = async (req,res)=>{
     const symbol = req.body.symbol;
+    console.log(symboy)
     yahooFinance.quote({
         symbol: symbol,
         modules: ['price']
