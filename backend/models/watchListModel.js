@@ -3,10 +3,14 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const WatchListSchema = new Schema({
-    watchlist:[{
+    name:{
         type: String,
+        required: true
+    },
+    watchlist:{
+        type: [String],
         required: false
-    }],
+    },
     userID:{
         type: String,
         required: true
@@ -16,10 +20,8 @@ const WatchListSchema = new Schema({
     timestamps: true,
 });
 
-WatchListSchema.pre('save', async (next)=>{
-    if(!this.isModified('watchlist')){
+WatchListSchema.pre('save', async (next)=>{ 
         return next();
-    }
 })
 
 const Watchlist = mongoose.model('Watch List', WatchListSchema);

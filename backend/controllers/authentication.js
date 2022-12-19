@@ -82,21 +82,24 @@ const authUser = asyncHandler( async (req, res)=>{
 });
 
 const profile = (req, res)=>{
-    jwt.verify(req.cookies.token, process.env.SECRET_KEY, async (err, decoded)=>{
-        if(err){
-            console.log(err);
-            res.sendStatus(500);
-            return;
-        }
-       const user = await User.findById(decoded.userID);
-        if(user){
-            res.status(200).json({
-                firstname: user.firstname,
-                lastnme: user.lastname,
-                email: user.email
-            })
-        }
-    })
+    console.log(req.cookies.token)
+    if(req.cookies.token){
+        jwt.verify(req.cookies.token, process.env.SECRET_KEY, async (err, decoded)=>{
+            if(err){
+                res.redirect('/login')
+            }
+           const user = await User.findById(decoded.userID);
+            if(user){
+                res.status(200).json({
+                    firstname: user.firstname,
+                    lastnme: user.lastname,
+                    email: user.email
+                })
+            }
+        })
+    }else{
+        res.sendStatus(403);
+    }
 }
 
 
