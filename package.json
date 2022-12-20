@@ -4,6 +4,7 @@
     "description": "Wall Street Finds BackEnd API",
     "main": "server.js",
     "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
         "start": "nodemon backend/server.js"
     },
     "author": "Pashani Jaulani & Peter Beeshop",

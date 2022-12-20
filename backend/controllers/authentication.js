@@ -70,7 +70,13 @@ const authUser = asyncHandler( async (req, res)=>{
 		expiresIn: jwtExpirySeconds,
 	});
     console.log(token);
-    res.cookie("token", token, { maxAge: jwtExpirySeconds * 1000 })
+    res.cookie("token", token, { maxAge: jwtExpirySeconds * 1000 });
+    res.send({
+        "firstname":user.firstname,
+        "lastname":user.lastname,
+        "email":user.email,
+        "subscription":user.isSubscribed
+    });
 	res.end();
 
        //res.redirect('/profile')
