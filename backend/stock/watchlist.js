@@ -4,6 +4,8 @@ const User = require('../models/userModel');
 const yahooFinance = require('yahoo-finance');
 const asyncHandler = require('express-async-handler');
 const jwt = require('jsonwebtoken');
+const util = require('util');
+const _ = require('lodash');
 
 
 
@@ -22,9 +24,6 @@ const getUserWatchlist = async (req, res)=>{
                 if(!watchlist){
                     res.send('Watchlist empty for this user');
                 }
-                console.log(watchlist.length)
-                const symbols = watchlist[0];
-                const data = watchlist.watchlist;
                 const dayta =[];
                 for(let i = 0; i < watchlist.length; i++){
                     dayta.push({
@@ -33,23 +32,6 @@ const getUserWatchlist = async (req, res)=>{
                     })
                 }
 
-               /*for(let i =0; i < data.length; i++){
-                    await yahooFinance.quote({
-                        symbol: data[i],
-                        modules: ['price']
-                    }, (err, result)=>{
-                        if(err) throw err;
-                        format.push(result)
-                    })
-                }*/
-                /*const fields = ['a', 'b', 'b2', 'b3', 'p', 'o'];
-                await yahooFinance.snapshot({
-                    fields: fields,
-                    symbols:data
-                },(err, result)=>{
-                    if(err) throw err
-                    res.send(result);
-                })*/
                 res.send(dayta)
             }else{
                 res.sendStatus(404);
@@ -60,4 +42,28 @@ const getUserWatchlist = async (req, res)=>{
     }
 };
 
-module.exports = getUserWatchlist;
+const getList = async (req, res)=>{
+    console.log(req.body.id);
+   const id = req.body.id;
+  const query = await Watchlist.findById(id);
+   if(!query){
+    res.sendStatus(404).send('Error Watchlist No in DB');
+    
+   }else{
+     const SYMBOLS = query.watchlist;
+     const FIELDS = ['a', 'b', 'b2', 'b3', 'p', 'o'];
+  await yahooFinance.snapshot({
+    fields: FIELDS,
+    symbols: SYMBOLS
+    }, (err, result)=>{
+        if(err) throw err;
+
+        res.send(result)
+    })
+    
+   }
+   
+   
+}
+
+module.exports = { getUserWatchlist, getList };
