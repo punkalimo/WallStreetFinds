@@ -22,18 +22,26 @@ const getUserWatchlist = async (req, res)=>{
                 if(!watchlist){
                     res.send('Watchlist empty for this user');
                 }
+                console.log(watchlist.length)
                 const symbols = watchlist[0];
-                let data = symbols.watchlist;
-                const format = [];
-               for(let i =0; i<data.length; i++){
+                const data = watchlist.watchlist;
+                const dayta =[];
+                for(let i = 0; i < watchlist.length; i++){
+                    dayta.push({
+                        "name":watchlist[i].name,
+                        "list_id": watchlist[i]._id
+                    })
+                }
+
+               /*for(let i =0; i < data.length; i++){
                     await yahooFinance.quote({
                         symbol: data[i],
                         modules: ['price']
                     }, (err, result)=>{
-                        if(err) throw error;
+                        if(err) throw err;
                         format.push(result)
                     })
-                }
+                }*/
                 /*const fields = ['a', 'b', 'b2', 'b3', 'p', 'o'];
                 await yahooFinance.snapshot({
                     fields: fields,
@@ -42,7 +50,7 @@ const getUserWatchlist = async (req, res)=>{
                     if(err) throw err
                     res.send(result);
                 })*/
-                res.send(format)
+                res.send(dayta)
             }else{
                 res.sendStatus(404);
             }
