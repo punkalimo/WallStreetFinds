@@ -8,6 +8,7 @@ const jwt = require('jsonwebtoken');
 
 
 const getUserWatchlist = async (req, res)=>{
+    console.log(req.cookies)
     if(req.cookies.token){
         jwt.verify(req.cookies.token, process.env.SECRET_KEY, async (err, decoded)=>{
             if(err){
@@ -19,13 +20,13 @@ const getUserWatchlist = async (req, res)=>{
             if(user){
                const userID = decoded.userID;
                 const watchlist = await Watchlist.find({ userID: userID});
-                if(!watchlist){
+                if(watchlist.length === 0){
                     res.send('Watchlist empty for this user');
                 }
                 const symbols = watchlist[0];
                 let data = symbols.watchlist;
                 const format = [];
-               for(let i =0; i<data.length; i++){
+                for(let i =0; i<data.length; i++){
                     await yahooFinance.quote({
                         symbol: data[i],
                         modules: ['price']

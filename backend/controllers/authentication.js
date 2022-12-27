@@ -66,21 +66,20 @@ const authUser = asyncHandler( async (req, res)=>{
         const userID = user._id;
         const jwtExpirySeconds = 300
         const token = jwt.sign({ userID } , process.env.SECRET_KEY, {
-		algorithm: "HS256",
-		expiresIn: jwtExpirySeconds,
-	});
-    console.log(token);
-    res.cookie("token", token, { maxAge: jwtExpirySeconds * 1000 });
-    res.send({
-        token,
-        user: {
-            firstname: user.firstname,
-            lastname:user.lastname,
-            email:user.email,
-            subscription:user.isSubscribed
-        }
-    });
-	res.end();
+            algorithm: "HS256",
+            expiresIn: jwtExpirySeconds,
+	    });
+        console.log(token);
+        res.cookie("token", token, { maxAge: jwtExpirySeconds * 3600000, sameSite:'none', secure:true });
+        res.send({
+            token,
+            user: {
+                firstname: user.firstname,
+                lastname:user.lastname,
+                email:user.email,
+                subscription:user.isSubscribed
+            }
+        });
     }
 });
 
