@@ -35,6 +35,9 @@ jobs:
         with:
           name: node-app
           path: /release.zip
+          
+      - name: Check directory
+        run: ls -la
 
   deploy:
     runs-on: ubuntu-latest
