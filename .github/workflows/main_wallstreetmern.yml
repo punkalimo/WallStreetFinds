@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Node.js app to Azure Web App - wallstreetfinds
+name: Build and deploy Node.js app to Azure Web App - wallstreetmern
 
 on:
   push:
@@ -30,11 +30,14 @@ jobs:
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
         
+      - name: check directory
+        run: pwd
+        
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
           name: node-app
-          path: build/release.zip
+          path: /home/runner/work/WallStreetFinds/WallStreetFinds
 
   deploy:
     runs-on: ubuntu-latest
@@ -48,7 +51,11 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: node-app
+          path: .
           
+      - name: Create folder
+        run: mkdir -p ParentFolder/Server
+  
       - name: Unzip artifact for deployment
         run: unzip release.zip
 
@@ -56,7 +63,7 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'wallstreetfinds'
+          app-name: 'wallstreetmern'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_1280686AB6BB481F85D86F46A85373A4 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_8482F49E826E4336826A02E9D53C8CBB }}
           package: .

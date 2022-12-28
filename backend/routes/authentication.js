@@ -3,7 +3,8 @@ const router = express.Router();
 
 const { registerUser, authUser, recover, resetPassword,reset, profile, logout} = require('../controllers/authentication');
 const {nasdaq, stockSearch, addToWatchList, createWatchList } = require('../stock/screener');
-const  {getUserWatchlist, getList} = require('../stock/watchlist');
+const  {getUserWatchlist, getList, deleteWatchList} = require('../stock/watchlist');
+const news = require('../stock/news');
 
 router.route('/signup').post(registerUser);
 router.route('/login').post(authUser);
@@ -21,6 +22,8 @@ router.route('/stock/search').post(stockSearch);
 router.route('/my_watchlists').get(getUserWatchlist);
 router.route('/create_watchlist').post(createWatchList);
 router.route('/get_list/').post(getList);
+router.route('/home/news').get(news);
+router.route('/watchlist/delete').post(deleteWatchList);
 
 
 module.exports = router;
