@@ -13,7 +13,7 @@ ConnectDB();
 
 app.use(bodyParser.json());
 app.use(cors({
-    origin: 'https://localhost:3000',
+    origin: ['https://localhost:3000','https://wallstreetfinds.netlify.app'],
     credentials: true,
     methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH'],  
 }));

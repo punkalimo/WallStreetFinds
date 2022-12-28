@@ -4,6 +4,8 @@ const User = require('../models/userModel');
 const yahooFinance = require('yahoo-finance');
 const asyncHandler = require('express-async-handler');
 const jwt = require('jsonwebtoken');
+const util = require('util');
+const _ = require('lodash');
 
 
 
@@ -21,29 +23,21 @@ const getUserWatchlist = async (req, res)=>{
                const userID = decoded.userID;
                 const watchlist = await Watchlist.find({ userID: userID});
                 if(watchlist.length === 0){
-                    res.send('Watchlist empty for this user');
+                    res.send(watchlist);
+                } else {
+                    const dayta =[];
+                    for(let i = 0; i < watchlist.length; i++){
+                        dayta.push({
+                            "name":watchlist[i].name,
+                            "list_id": watchlist[i]._id,
+                            "createdAt": watchlist[i].createdAt,
+                            "watchlist": watchlist[i].watchlist
+                        })
+                    }
+    
+                    res.send(dayta)
                 }
-                const symbols = watchlist[0];
-                let data = symbols.watchlist;
-                const format = [];
-                for(let i =0; i<data.length; i++){
-                    await yahooFinance.quote({
-                        symbol: data[i],
-                        modules: ['price']
-                    }, (err, result)=>{
-                        if(err) throw error;
-                        format.push(result)
-                    })
-                }
-                /*const fields = ['a', 'b', 'b2', 'b3', 'p', 'o'];
-                await yahooFinance.snapshot({
-                    fields: fields,
-                    symbols:data
-                },(err, result)=>{
-                    if(err) throw err
-                    res.send(result);
-                })*/
-                res.send(format)
+                
             }else{
                 res.sendStatus(404);
             }
@@ -53,4 +47,28 @@ const getUserWatchlist = async (req, res)=>{
     }
 };
 
-module.exports = getUserWatchlist;
+const getList = async (req, res)=>{
+    console.log(req.body.id);
+   const id = req.body.id;
+  const query = await Watchlist.findById(id);
+   if(!query){
+    res.sendStatus(404).send('Error Watchlist No in DB');
+    
+   }else{
+     const SYMBOLS = query.watchlist;
+     const FIELDS = ['a', 'b', 'b2', 'b3', 'p', 'o'];
+  await yahooFinance.snapshot({
+    fields: FIELDS,
+    symbols: SYMBOLS
+    }, (err, result)=>{
+        if(err) throw err;
+
+        res.send(result)
+    })
+    
+   }
+   
+   
+}
+
+module.exports = { getUserWatchlist, getList };
