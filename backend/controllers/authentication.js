@@ -33,7 +33,7 @@ const registerUser = asyncHandler( async(req, res)=>{
     const { firstname, lastname, email, password} = req.body;
     const userExists = await User.findOne({email});
     if(userExists){
-        res.status(400);
+        res.status(400).send("User with that email already exists. Please login!");
         throw new Error('User Already Exists');
     }
     const user = await User.create({
@@ -59,31 +59,27 @@ const authUser = asyncHandler( async (req, res)=>{
     const { email, password } = req.body;
     const user = await User.findOne( {email});
     if(!user){
-        res.status(400);
+        res.status(400).send("Invalid email address or password");
         throw new Error('Invalid Email Entered');
     }
     if(user &&( await user.matchPassword(password))){
         const userID = user._id;
         const jwtExpirySeconds = 300
         const token = jwt.sign({ userID } , process.env.SECRET_KEY, {
-		algorithm: "HS256",
-		expiresIn: jwtExpirySeconds,
-	});
-    console.log(token);
-    res.cookie("token", token, { maxAge: jwtExpirySeconds * 1000 });
-    res.send({
-        "firstname":user.firstname,
-        "lastname":user.lastname,
-        "email":user.email,
-        "subscription":user.isSubscribed
-    });
-	res.end();
-
-       //res.redirect('/profile')
-        /*res.status(200).json({
-            firstname: user.firstname,
-            id: user._id
-        });*/
+            algorithm: "HS256",
+            expiresIn: jwtExpirySeconds,
+	    });
+        console.log(token);
+        res.cookie("token", token, { maxAge: jwtExpirySeconds * 3600000, sameSite:'none', secure:true });
+        res.send({
+            token,
+            user: {
+                firstname: user.firstname,
+                lastname:user.lastname,
+                email:user.email,
+                subscription:user.isSubscribed
+            }
+        });
     }
 });
 

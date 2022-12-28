@@ -14,8 +14,9 @@ ConnectDB();
 
 app.use(bodyParser.json());
 app.use(cors({
-    origin: 'http://localhost:3000',
-    methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH']
+    origin: ['https://localhost:3000','https://wallstreetfinds.netlify.app'],
+    credentials: true,
+    methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH'],  
 }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookies());

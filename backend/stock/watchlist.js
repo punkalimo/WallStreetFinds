@@ -10,6 +10,7 @@ const _ = require('lodash');
 
 
 const getUserWatchlist = async (req, res)=>{
+    console.log(req.cookies)
     if(req.cookies.token){
         jwt.verify(req.cookies.token, process.env.SECRET_KEY, async (err, decoded)=>{
             if(err){
@@ -21,18 +22,22 @@ const getUserWatchlist = async (req, res)=>{
             if(user){
                const userID = decoded.userID;
                 const watchlist = await Watchlist.find({ userID: userID});
-                if(!watchlist){
-                    res.send('Watchlist empty for this user');
+                if(watchlist.length === 0){
+                    res.send(watchlist);
+                } else {
+                    const dayta =[];
+                    for(let i = 0; i < watchlist.length; i++){
+                        dayta.push({
+                            "name":watchlist[i].name,
+                            "list_id": watchlist[i]._id,
+                            "createdAt": watchlist[i].createdAt,
+                            "watchlist": watchlist[i].watchlist
+                        })
+                    }
+    
+                    res.send(dayta)
                 }
-                const dayta =[];
-                for(let i = 0; i < watchlist.length; i++){
-                    dayta.push({
-                        "name":watchlist[i].name,
-                        "list_id": watchlist[i]._id
-                    })
-                }
-
-                res.send(dayta)
+                
             }else{
                 res.sendStatus(404);
             }

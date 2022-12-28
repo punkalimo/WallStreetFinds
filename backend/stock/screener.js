@@ -55,8 +55,7 @@ const createWatchList = async ( req, res)=>{
                     userID
                 });
                 if(list_save){
-                    console.log(list_save.name);
-                    res.send(list_save._id);
+                    res.send(list_save);
                 }else{
                     res.status(500).send('Error Unable to Create Watchlist');
                 }
