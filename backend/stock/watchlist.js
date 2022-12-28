@@ -43,8 +43,10 @@ const getUserWatchlist = async (req, res)=>{
 };
 
 const getList = async (req, res)=>{
-    console.log(req.body.id);
-   const id = req.body.id;
+    if(!req.body.id){
+        res.status(403)
+    }
+    const id = req.body.id;
   const query = await Watchlist.findById(id);
    if(!query){
     res.sendStatus(404).send('Error Watchlist No in DB');
@@ -65,5 +67,32 @@ const getList = async (req, res)=>{
    
    
 }
-
-module.exports = { getUserWatchlist, getList };
+const deleteWatchList = async (req, res)=>{
+    if(req.cookies.token){
+        jwt.verify(req.cookies.token, process.env.SECRET_KEY, async (err, decoded)=>{
+            if(err){
+                console.log(err);
+                res.sendStatus(500);
+                return;
+            }else{
+                const listId = req.body.id;
+                const result = await Watchlist.findById(listId);
+                if(!result){
+                    res.status(500).send('Invalid Watchlist');
+                }else{
+                    Watchlist.findByIdAndRemove(listId, (err, doc)=>{
+                        if(!err){
+                            res.status(201).send('delete successful')
+                        }else{
+                            console.log(err);
+                        }
+                    })
+                }
+            }
+           
+        });
+    } else {
+        res.status(400).send('Please Login');
+    }
+}
+module.exports = { getUserWatchlist, getList, deleteWatchList };
