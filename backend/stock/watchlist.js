@@ -29,7 +29,7 @@ const getUserWatchlist = async (req, res)=>{
                     for(let i = 0; i < watchlist.length; i++){
                         dayta.push({
                             "name":watchlist[i].name,
-                            "list_id": watchlist[i]._id,
+                            "_id": watchlist[i]._id,
                             "createdAt": watchlist[i].createdAt,
                             "watchlist": watchlist[i].watchlist
                         })

@@ -77,8 +77,7 @@ const addToWatchList = async (req, res)=>{
             if(list){
     
                const watchlist  = req.body.stock;
-               console.log(watchlist)
-               const updateQuery = { $set:{ watchlist: watchlist}}
+               const updateQuery = { $push:{ watchlist: [...watchlist] }}
                Watchlist.updateOne({'_id':req.body.ID}, updateQuery, (err, done)=>{
                 if(err) throw err
                 res.status(200).send('Added to watchlist ')
