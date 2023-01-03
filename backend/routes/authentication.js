@@ -5,6 +5,7 @@ const { registerUser, authUser, recover, resetPassword,reset, profile, logout} =
 const {nasdaq, stockSearch, addToWatchList, createWatchList } = require('../stock/screener');
 const  {getUserWatchlist, getList, deleteWatchList} = require('../stock/watchlist');
 const news = require('../stock/news');
+const SearchObj = require('../stock/stock');
 
 router.route('/signup').post(registerUser);
 router.route('/login').post(authUser);
@@ -24,6 +25,7 @@ router.route('/create_watchlist').post(createWatchList);
 router.route('/get_list/').post(getList);
 router.route('/home/news').get(news);
 router.route('/watchlist/delete').post(deleteWatchList);
+router.route('/search').post(SearchObj);
 
 
 module.exports = router;
