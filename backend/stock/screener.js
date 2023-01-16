@@ -27,7 +27,7 @@ const nasdaq= async (req, res)=>{
 
 const stockSearch = async (req,res)=>{
     const symbol = req.body.symbol;
-    console.log(symboy)
+    console.log(symbol)
     yahooFinance.quote({
         symbol: symbol,
         modules: ['price']

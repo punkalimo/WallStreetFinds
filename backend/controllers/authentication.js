@@ -69,8 +69,8 @@ const authUser = asyncHandler( async (req, res)=>{
             algorithm: "HS256",
             expiresIn: jwtExpirySeconds,
 	    });
-        console.log(token);
         res.cookie("token", token, { maxAge: jwtExpirySeconds * 3600000, sameSite:'none', secure:true });
+        console.log(req.cookies.token)
         res.send({
             token,
             user: {

@@ -27,7 +27,7 @@ const SearchObj= async (req, res)=>{
     .then(function(myJson) {
         let objects = myJson.data.rows;
         
-          var results = [];
+        var results = [];
         const toSearch = trimString(req.body.search); // trim it
           for(var i=0; i<objects.length; i++) {
             for(var key in objects[i]) {
@@ -40,5 +40,31 @@ const SearchObj= async (req, res)=>{
         
     });
 }
+const SearchArray = async(req, res)=>{
+  let url = 'http://api.nasdaq.com/api/screener/stocks?tableonly=true&limit=25&offset=0&exchange=%s&download=true';
+    fetch(url)
+    .then(function(response) {
+        return response.json();
+    })
+    .then(function(myJson) {
+        let objects = myJson.data.rows;
+        var results = [];
+        const data = req.body.search; // trim it
+        
+        for(var j=0; j<data.length; j++){
+          const toSearch = trimString(data[j])
+          console.log(toSearch)
+          for(var i=0; i<objects.length; i++) {
+            for(var key in objects[i]) {
+              if(objects[i][key].indexOf(toSearch)!=-1) {
+                if(!itemExists(results, objects[i])) results.push(objects[i]);
+              }
+            }
+          }
+        }
+          res.send(results);
+        
+    });
+}
 
- module.exports =  SearchObj;
+ module.exports =  {SearchObj, SearchArray};
