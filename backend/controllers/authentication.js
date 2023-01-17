@@ -69,17 +69,19 @@ const authUser = asyncHandler( async (req, res)=>{
             algorithm: "HS256",
             expiresIn: jwtExpirySeconds,
 	    });
-        res.cookie("token", token, { maxAge: jwtExpirySeconds * 3600000, sameSite:'none', secure:true });
-        console.log(req.cookies.token)
-        res.send({
-            token,
-            user: {
-                firstname: user.firstname,
-                lastname:user.lastname,
-                email:user.email,
-                subscription:user.isSubscribed
-            }
+        res.cookie("token", token, { 
+            maxAge: jwtExpirySeconds * 3600000, 
+            sameSite:'none'
         });
+        const user_logged = {
+            firstname: user.firstname,
+            lastname:user.lastname,
+            email:user.email,
+            subscription:user.isSubscribed
+        }
+        res.send({token,user_logged });
+        console.log(req.cookies.token)
+        res.end();
     }
 });
 
