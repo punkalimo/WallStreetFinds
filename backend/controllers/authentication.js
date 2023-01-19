@@ -70,8 +70,7 @@ const authUser = asyncHandler( async (req, res)=>{
             expiresIn: jwtExpirySeconds,
 	    });
         res.cookie("token", token, { 
-            maxAge: jwtExpirySeconds * 3600000, 
-            sameSite:'none'
+            maxAge: jwtExpirySeconds * 3600000,
         });
         const user_logged = {
             firstname: user.firstname,

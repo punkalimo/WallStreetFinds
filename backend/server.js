@@ -33,7 +33,7 @@ const API_KEY = 'fa71713a2541481a94c5d0e961cd1c7fa04067302fa64f5795e005c778b7b40
 
 const streamApi = StreamApi(API_KEY);
 
-streamApi.on('articles', (articles)=> console.log(articles[0].title));
+//streamApi.on('articles', (articles)=> console.log(articles[0].title));
 streamApi.on('error', (err)=> console.log('Connection error' + err));
 streamApi.on('open', ()=> console.log('Connection open'));
 streamApi.on('close', ()=> console.log('Connection closed'));

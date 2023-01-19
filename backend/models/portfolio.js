@@ -9,7 +9,7 @@ const PortfolioSchema = new Schema({
         required: true
     },
     stock:{
-        type: [String],
+        type: String,
         required: false
     },
     shares:{
