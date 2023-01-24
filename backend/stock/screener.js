@@ -92,4 +92,31 @@ const addToWatchList = async (req, res)=>{
 
 }
 
-module.exports= { nasdaq, stockSearch,addToWatchList, createWatchList }
+const appendWatchlist = async (req, res)=>{
+    if(req.cookies.token){
+        jwt.verify(req.cookies.token, process.env.SECRET_KEY, async (err, decoded)=>{
+            if(err){
+                console.log(err);
+                res.sendStatus(500);
+                return;
+            }
+           const list = await Watchlist.findById(req.body.ID);
+            if(list){
+    
+               const watchlist  = req.body.stock;
+               const updateQuery = { $push:{ watchlist: watchlist }}
+               Watchlist.updateOne({'_id':req.body.ID}, updateQuery, (err, done)=>{
+                if(err) throw err
+                res.status(200).send('Added to watchlist ')
+               })
+               
+    
+            }
+        })
+    }else{
+        res.sendStatus(403);
+    }
+
+}
+
+module.exports= { nasdaq, stockSearch,addToWatchList, createWatchList, appendWatchlist }

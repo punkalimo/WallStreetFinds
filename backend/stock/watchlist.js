@@ -6,11 +6,13 @@ const asyncHandler = require('express-async-handler');
 const jwt = require('jsonwebtoken');
 const util = require('util');
 const _ = require('lodash');
+const { Query } = require('mongoose');
 
 
 
 const getUserWatchlist = async (req, res)=>{
     console.log(req.cookies)
+    console.log('here')
     if(req.cookies.token){
         jwt.verify(req.cookies.token, process.env.SECRET_KEY, async (err, decoded)=>{
             if(err){
@@ -72,6 +74,35 @@ const getList = async (req, res)=>{
    
    
 }
+const deleteFromWatchlist = async (req, res)=>{
+    if(req.cookies.token){
+        jwt.verify(req.cookies.token, process.env.SECRET_KEY, async (err, decoded)=>{
+            if(err){
+                console.log(err);
+                res.sendStatus(500);
+                return;
+            }else{
+                if(!req.body.id){
+                    res.sendStatus(403);
+                }else{
+                    const query = await Watchlist.findById(req.body.id);
+                    if(query){
+                        
+                        const watchlist = query.watchlist
+                        const update = await Watchlist.updateMany({},{ $pull: { watchlist: req.body.symbol}});
+                        if(update){
+                            res.sendStatus(200).send("Deleted From WatchList Succesfully")
+                        }
+                    }else{
+                        res.status(403).send('No Watchlist in DB')
+                    }
+                }
+
+            }
+
+    })
+}
+}
 const deleteWatchList = async (req, res)=>{
     if(req.cookies.token){
         jwt.verify(req.cookies.token, process.env.SECRET_KEY, async (err, decoded)=>{
@@ -100,4 +131,4 @@ const deleteWatchList = async (req, res)=>{
         res.status(400).send('Please Login');
     }
 }
-module.exports = { getUserWatchlist, getList, deleteWatchList };
+module.exports = { getUserWatchlist, getList, deleteWatchList, deleteFromWatchlist };

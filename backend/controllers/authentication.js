@@ -67,12 +67,10 @@ const authUser = asyncHandler( async (req, res)=>{
         const jwtExpirySeconds = 300
         const token = jwt.sign({ userID } , process.env.SECRET_KEY, {
             algorithm: "HS256",
-            expiresIn: maxAge,
+            expiresIn: jwtExpirySeconds,
 	    });
         res.cookie("token", token, { 
-            maxAge: jwtExpirySeconds * 3600000, 
-            sameSite:'none',
-            secure: true
+            maxAge: jwtExpirySeconds * 3600000
         });
         const user_logged = {
             firstname: user.firstname,

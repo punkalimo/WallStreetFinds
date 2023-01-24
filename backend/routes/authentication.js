@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 
 const { registerUser, authUser, recover, resetPassword,reset, profile, logout} = require('../controllers/authentication');
-const {nasdaq, stockSearch, addToWatchList, createWatchList } = require('../stock/screener');
-const  {getUserWatchlist, getList, deleteWatchList} = require('../stock/watchlist');
+const {nasdaq, stockSearch, addToWatchList, createWatchList, appendWatchlist } = require('../stock/screener');
+const  {getUserWatchlist, getList, deleteWatchList, deleteFromWatchlist } = require('../stock/watchlist');
 const news = require('../stock/news');
 const {SearchObj, SearchArray} = require('../stock/stock');
 const {createPortfolio, myPortfolios, viewPortfolio, addToPortfolio} = require('../stock/portfolio')
@@ -32,6 +32,8 @@ router.route('/create/portfolio').post(createPortfolio)
 router.route('/portfolios').get(myPortfolios);
 router.route('/portfolios/view').post(viewPortfolio);
 router.route('/portfolios/add').post(addToPortfolio)
+router.route('/delete_from_list').post(deleteFromWatchlist);
+router.route('/watchlist/update').post(appendWatchlist);
 
 
 module.exports = router;
