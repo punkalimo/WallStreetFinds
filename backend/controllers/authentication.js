@@ -2,6 +2,7 @@ const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 const asyncHandler = require('express-async-handler');
 const crypto = require('crypto');
+const { OAuth2Client } = require('google-auth-library');
 
 const maxAge = 3 * 24 * 60 * 60;
 
@@ -64,13 +65,15 @@ const authUser = asyncHandler( async (req, res)=>{
     }
     if(user &&( await user.matchPassword(password))){
         const userID = user._id;
-        const jwtExpirySeconds = 300
+        const jwtExpirySeconds = 300 * 3600000;
         const token = jwt.sign({ userID } , process.env.SECRET_KEY, {
             algorithm: "HS256",
             expiresIn: jwtExpirySeconds,
 	    });
         res.cookie("token", token, { 
-            maxAge: jwtExpirySeconds * 3600000
+            maxAge: jwtExpirySeconds,
+            sameSite: 'none',
+            secure: true
         });
         const user_logged = {
             firstname: user.firstname,
@@ -79,10 +82,73 @@ const authUser = asyncHandler( async (req, res)=>{
             subscription:user.isSubscribed
         }
         res.send({token,user_logged });
-        console.log(req.cookies.token)
-        res.end();
     }
 });
+const verifyToken = async(client_id, jwtToken) => {
+    const client = new OAuth2Client(client_id);
+    // Call the verifyIdToken to verify and decode it
+    const ticket = await client.verifyIdToken({
+        idToken: jwtToken,
+        audience: client_id,
+    });
+    // Get the JSON with all the user info
+    const payload = ticket.getPayload();
+
+    // This is a JSON object that contains all the user info
+   return payload;
+}
+const googleAuth = async(req, res) => {
+   const userObj = verifyToken(process.env.MY_GOOGLE_CLIENT_ID, req.body.jwtToken);
+   userObj.then( async(userObject) => {
+    const foundUser = await User.findOne( {email: userObject.email});
+    if (!foundUser) {
+        const user = await User.create({
+            firstname: userObject.given_name,
+            lastname: userObject.family_name,
+            email: userObject.email,
+        });
+        if (user) {
+            const userID = user._id;
+            const jwtExpirySeconds = 300 * 3600000;
+            const token = jwt.sign({ userID } , process.env.SECRET_KEY, {
+                algorithm: "HS256",
+                expiresIn: jwtExpirySeconds,
+            });
+            res.cookie("token", token, { 
+                maxAge: jwtExpirySeconds,
+                sameSite: 'none',
+                secure: true
+            });
+            const user_logged = {
+                firstname: user.firstname,
+                lastname:user.lastname,
+                email:user.email,
+                subscription:user.isSubscribed
+            }
+            res.send({token,user_logged });
+        }
+    } else {
+        const userID = foundUser._id;
+        const jwtExpirySeconds = 300 * 3600000;
+        const token = jwt.sign({ userID } , process.env.SECRET_KEY, {
+            algorithm: "HS256",
+            expiresIn: jwtExpirySeconds,
+	    });
+        res.cookie("token", token, { 
+            maxAge: jwtExpirySeconds,
+            sameSite: 'none',
+            secure: true
+        });
+        const user_logged = {
+            firstname: foundUser.firstname,
+            lastname:foundUser.lastname,
+            email:foundUser.email,
+            subscription:foundUser.isSubscribed
+        }
+        res.send({token,user_logged });
+    }
+   }).catch((error) => res.status(500).json({message: error.message}))
+};
 
 const profile = (req, res)=>{
     console.log(req.cookies.token)
@@ -154,4 +220,4 @@ const resetPassword = (req, res) =>{
     })
 };
 
-module.exports= {registerUser, authUser, recover, reset, resetPassword, profile, checkToken, logout};
+module.exports= {registerUser, authUser, googleAuth, recover, reset, resetPassword, profile, checkToken, logout};

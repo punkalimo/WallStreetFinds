@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { registerUser, authUser, recover, resetPassword,reset, profile, logout} = require('../controllers/authentication');
+const { registerUser, authUser,googleAuth, recover, resetPassword,reset, profile, logout} = require('../controllers/authentication');
 const {nasdaq, stockSearch, addToWatchList, createWatchList, appendWatchlist } = require('../stock/screener');
 const  {getUserWatchlist, getList, deleteWatchList, deleteFromWatchlist } = require('../stock/watchlist');
 const news = require('../stock/news');
@@ -34,6 +34,8 @@ router.route('/portfolios/view').post(viewPortfolio);
 router.route('/portfolios/add').post(addToPortfolio)
 router.route('/delete_from_list').post(deleteFromWatchlist);
 router.route('/watchlist/update').post(appendWatchlist);
+//google auth
+router.route('/google-auth').post(googleAuth);
 
 
 module.exports = router;
