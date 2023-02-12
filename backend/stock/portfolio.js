@@ -153,6 +153,7 @@ const viewPortfolio = async (req, res)=>{
             }
             const user = await User.findById(decoded.userID);
             const portfolio = await Portfolio.findById(req.body.id)
+            console.log(portfolio)
             let url = 'http://api.nasdaq.com/api/screener/stocks?tableonly=true&limit=25&offset=0&exchange=%s&download=true';
             fetch(url)
             .then(function(response) {
@@ -162,6 +163,7 @@ const viewPortfolio = async (req, res)=>{
                 let objects = myJson.data.rows;
                 
                 let results = [];
+
                 const toSearch = trimString(portfolio.stock); // trim it
                   for(var i=0; i<objects.length; i++) {
                     for(var key in objects[i]) {
@@ -190,4 +192,52 @@ const viewPortfolio = async (req, res)=>{
     }
 }
 
-module.exports = {createPortfolio, viewPortfolio, myPortfolios, addToPortfolio}
+const renamePortfolio = async (req,res)=>{
+   console.log(req.cookies.token);
+   if(req.cookies.token){
+    jwt.verify(req.cookies.token, process.env.SECRET_KEY, async (err, decoded)=>{
+        if(err) {
+            res.status(500).send("Please login");
+            return;
+        }
+        if(!req.body.id){
+            res.status(400).send("Please add or create a portfolio");
+            return;
+        }
+        const user = await User.findById(decoded.userID);
+        
+        const update= {$set :{name: req.body.name}};
+        Portfolio.updateOne({_id: req.body.id}, update, async (error,done)=>{
+            if(error) throw error
+            const portfolio = await Portfolio.findById(req.body.id)
+            res.send(portfolio)
+        })
+        
+    })
+   }
+}
+const deletePortfolio = async (req,res)=>{
+    console.log(req.cookies.token);
+   if(req.cookies.token){
+    jwt.verify(req.cookies.token, process.env.SECRET_KEY, async (err, decoded)=>{
+        if(err) {
+            res.status(500).send("Please login");
+            return;
+        }
+        if(!req.body.id){
+            res.status(400).send("Please add or create a portfolio");
+            return;
+        }
+        const user = await User.findById(decoded.userID);
+        
+        Portfolio.deleteOne({_id: req.body.id}, (error,done)=>{
+            if(error) throw error
+            console.log(done)
+            res.send('Portfolio Deleted Successfully')
+        })
+        
+    })
+   }
+}
+
+module.exports = {createPortfolio, viewPortfolio, myPortfolios, addToPortfolio, renamePortfolio, deletePortfolio}
