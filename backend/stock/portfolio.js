@@ -174,7 +174,7 @@ const viewPortfolio = async (req, res)=>{
                           "Company Name":results.name,
                           });
                 }
-                console.log(results)
+                res.send(results);
                 //res.send(port)
                 
                 
