@@ -6,7 +6,7 @@ const {nasdaq, stockSearch, addToWatchList, createWatchList, appendWatchlist } =
 const  {getUserWatchlist, getList, deleteWatchList, deleteFromWatchlist } = require('../stock/watchlist');
 const news = require('../stock/news');
 const {SearchObj, SearchArray} = require('../stock/stock');
-const {createPortfolio, myPortfolios, viewPortfolio, addToPortfolio} = require('../stock/portfolio')
+const {createPortfolio, myPortfolios, viewPortfolio, addToPortfolio, renamePortfolio, deletePortfolio} = require('../stock/portfolio')
 
 router.route('/signup').post(registerUser);
 router.route('/login').post(authUser);
@@ -31,7 +31,9 @@ router.route('/search/array').post(SearchArray);
 router.route('/create/portfolio').post(createPortfolio)
 router.route('/portfolios').get(myPortfolios);
 router.route('/portfolios/view').post(viewPortfolio);
-router.route('/portfolios/add').post(addToPortfolio)
+router.route('/portfolios/add').post(addToPortfolio);
+router.route('/renamePortfolio').post(renamePortfolio);
+router.route('/deletePortfolio').post(deletePortfolio)
 router.route('/delete_from_list').post(deleteFromWatchlist);
 router.route('/watchlist/update').post(appendWatchlist);
 //google auth
