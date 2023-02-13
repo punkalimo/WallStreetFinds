@@ -1,6 +1,7 @@
 const User = require('../models/userModel');
 const Portfolio = require('../models/portfolio');
 const jwt = require('jsonwebtoken');
+const { result } = require('lodash');
 
 const trimString = (s)=>{
     var l=0, r=s.length -1;
@@ -124,16 +125,11 @@ const addToPortfolio = async (req, res)=>{
             
                 
                 const list = req.body;
-                const updateQuery = {  
-                    shares: req.body.shares,
-                    averagePrice: req.body.price,
-                    stock: req.body.symbol
-                 }
-                const exec = await Portfolio.updateOne({'id':id}, updateQuery);
-                if(exec){
-                    const data = await portfolioName(req.body.symbol);
-                    await res.send(data);
-                }
+                const exec = await Portfolio.findOneAndUpdate(
+                    { _id: id },
+                    { $push: { stocks: { symbol: req.body.symbol, price: req.body.price, shares: req.body.shares } } },
+                    { new: true });
+                    console.log(exec.stocks)
             
         });
     }
@@ -152,8 +148,9 @@ const viewPortfolio = async (req, res)=>{
                 return;
             }
             const user = await User.findById(decoded.userID);
-            const portfolio = await Portfolio.findById(req.body.id)
-            console.log(portfolio)
+            const query = await Portfolio.findById(req.body.id);
+            const stocks = query.stocks
+            const symbols = stocks.map(stock => stock.symbol);
             let url = 'http://api.nasdaq.com/api/screener/stocks?tableonly=true&limit=25&offset=0&exchange=%s&download=true';
             fetch(url)
             .then(function(response) {
@@ -161,26 +158,25 @@ const viewPortfolio = async (req, res)=>{
             })
             .then(function(myJson) {
                 let objects = myJson.data.rows;
-                
+                let port= []
                 let results = [];
-
-                const toSearch = trimString(portfolio.stock); // trim it
+                for(let l=0; l<symbols.length; l++){
+                    const toSearch = trimString(symbols[l]); // trim it
                   for(var i=0; i<objects.length; i++) {
                     for(var key in objects[i]) {
                       if(objects[i][key].indexOf(toSearch)!=-1) {
                         if(!itemExists(results, objects[i])) results.push(objects[i]);
+                      
                       }
                     }
                   }
-                  const port = {
-                    "Company Name":results[0].name,
-                    "Price":portfolio.averagePrice,
-                    "Market Cap": results[0].marketCap,
-                    "Expected Return":" ",
-                    "Industry":results[0].Industry,
-                    "Score":" "
-                  }
-                  res.send(port);
+                   port.push({
+                          "Company Name":results.name,
+                          });
+                }
+                console.log(results)
+                //res.send(port)
+                
                 
             });
             

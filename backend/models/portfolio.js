@@ -2,24 +2,19 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 var SchemaTypes = mongoose.Schema.Types;
+const ObjectSchema = new Schema({
+    symbol: { type: String, required: false },
+    price: { type: Number, required: false },
+    shares: { type: String, required: false }
+  });
 
 const PortfolioSchema = new Schema({
     name:{
         type: String,
         required: true
     },
-    stock:{
-        type: String,
-        required: false
-    },
-    shares:{
-        type: Number,
-        required: false
-    },
-    averagePrice:{
-        type: SchemaTypes.Decimal128,
-        required: false
-    },
+    stocks:[ObjectSchema],
+  
     userID:{
         type: String,
         required: true

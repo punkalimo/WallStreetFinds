@@ -91,7 +91,7 @@ const deleteFromWatchlist = async (req, res)=>{
                         const watchlist = query.watchlist
                         const update = await Watchlist.updateMany({},{ $pull: { watchlist: req.body.symbol}});
                         if(update){
-                            res.sendStatus(200)
+                            res.sendStatus(200).send("Deleted From WatchList Succesfully")
                         }
                     }else{
                         res.status(403).send('No Watchlist in DB')
