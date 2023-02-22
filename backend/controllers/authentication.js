@@ -73,7 +73,7 @@ const authUser = asyncHandler( async (req, res)=>{
         res.cookie("token", token, { 
             maxAge: jwtExpirySeconds,
             sameSite: 'none',
-            secure: true
+            secure: false
         });
         const user_logged = {
             firstname: user.firstname,
@@ -105,7 +105,7 @@ const googleAuth = async(req, res) => {
         const user = await User.create({
             firstname: userObject.given_name,
             lastname: userObject.family_name,
-            email: userObject.email,
+            email: userObject.email, 
         });
         if (user) {
             const userID = user._id;

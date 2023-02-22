@@ -5,11 +5,9 @@ const authRoute = require('./routes/authentication');
 const session = require('express-session');
 const cookies = require('cookie-parser');
 const bodyParser = require('body-parser');
+const { StreamApi } = require('financial-news-api');
 const cors = require('cors');
 const app = express();
-const https = require('https');
-const http = require('http');
-const { options } = require('./routes/authentication');
 dotenv.config();
 ConnectDB();
 
@@ -20,8 +18,6 @@ app.use(cors({
     credentials: true,
     methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH'],  
 }));
-
-
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookies());
 app.use(express.json());
@@ -32,13 +28,16 @@ app.use(session({
     secret: process.env.SECRET_KEY
 }));
 
-/*http.createServer(app).listen(5001);
-https.createServer(options, app).listen(5000);
+//News API 
+const API_KEY = 'fa71713a2541481a94c5d0e961cd1c7fa04067302fa64f5795e005c778b7b405';
 
-app.listen = ()=>{
-    const server = http.createServer(this);
-    return server.listen.apply(server, arguments);
-}*/
+const streamApi = StreamApi(API_KEY);
+
+streamApi.on('articles', (articles)=> console.log(articles[0].title));
+streamApi.on('error', (err)=> console.log('Connection error' + err));
+streamApi.on('open', ()=> console.log('Connection open'));
+streamApi.on('close', ()=> console.log('Connection closed'));
+
 
 
 const PORT = process.env.PORT || 3000;

@@ -7,6 +7,8 @@ const { isObjectIdOrHexString } = require('mongoose');
 const ObjectID =require('mongoose');
 
 const nasdaq= async (req, res)=>{
+   
+  
     let url = 'http://api.nasdaq.com/api/screener/stocks?tableonly=true&limit=25&offset=0&exchange=%s&download=true';
     fetch(url)
     .then(function(response) {

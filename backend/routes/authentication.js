@@ -6,6 +6,7 @@ const {nasdaq, stockSearch, addToWatchList, createWatchList, appendWatchlist } =
 const  {getUserWatchlist, getList, deleteWatchList, deleteFromWatchlist } = require('../stock/watchlist');
 const news = require('../stock/news');
 const {SearchObj, SearchArray} = require('../stock/stock');
+const {subscribe, cancel, success } = require('../controllers/paypal');
 const {createPortfolio, myPortfolios, viewPortfolio, addToPortfolio, renamePortfolio, deletePortfolio} = require('../stock/portfolio')
 
 router.route('/signup').post(registerUser);
@@ -37,7 +38,10 @@ router.route('/deletePortfolio').post(deletePortfolio)
 router.route('/delete_from_list').post(deleteFromWatchlist);
 router.route('/watchlist/update').post(appendWatchlist);
 //google auth
-router.route('/google-auth').post(googleAuth);
+router.route('/google-auth').get(googleAuth);
+router.route('/subscribe/paypal').post(subscribe);
+router.route('/cancel').get(cancel);
+router.route('/success').get(success);
 
 
 module.exports = router;
