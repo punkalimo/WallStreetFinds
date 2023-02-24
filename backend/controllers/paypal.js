@@ -38,9 +38,15 @@ const subscribe = async (req, res)=>{
                   'payment_method': 'paypal'
                 },
                 'redirect_urls': {
-                  'return_url': 'http://localhost:5000/success',
-                  'cancel_url': 'http://localhost:5000/cancel'
-                },
+                  'development': {
+                    'return_url': 'https://localhost:3000/subscription/success',
+                    'cancel_url': 'https://localhost:3000/subscription/cancel'
+                  },
+                  'production': {
+                    'return_url': 'https://wallstreetfinds.netlify.app/subscription/success',
+                    'cancel_url': 'https://wallstreetfinds.netlify.app/subscription/cancel'
+                  }
+                }[process.env.NODE_ENV || 'development'],
                 'transactions': [{
                   'amount': {
                     'total': req.body.price,
@@ -54,18 +60,13 @@ const subscribe = async (req, res)=>{
                     res.status(500).send('An error occurred while processing the payment contact admin');
                     return;
                 }else{
-                  res.cookie("paymentId", payment.id, {
-                      httpOnly: true,
-                      maxAge: maxAge * 1000
-                  });
-                  res.cookie("total", req.body.price, {
-                    httpOnly: true,
-                    maxAge: maxAge * 1000
-                });
+                  
                     for(let i =0; i< payment.links.length; i++){
                         if(payment.links[i].rel === 'approval_url'){
                             console.log(payment.links[i].href)
-                            res.redirect(payment.links[i].href)
+                            res.send({ approvalUrl: payment.links[i].href, paymentId: payment.id, price: req.body.price });
+                            return;
+                            // res.redirect(payment.links[i].href)
                         }
                     }
                 }
@@ -81,8 +82,8 @@ const subscribe = async (req, res)=>{
 }
 const success = async(req, res)=>{
 
-  const paymentId = req.cookies.paymentId;
-  const total = req.cookies.total;
+  const paymentId = req.query.paymentId;
+  const total = req.query.price;
 
   paypal.payment.get(paymentId, function (error, payment) {
     if (error) {
@@ -106,7 +107,6 @@ const success = async(req, res)=>{
         jwt.verify(req.cookies.token, process.env.SECRET_KEY, async (err, decoded)=>{
           paypal.payment.execute(paymentId, executePayment, (error, payment) => {
             if (error) {
-              console.log(error.response);
               res.status(500).send('An error occurred while processing the payment');
             } else {
               // Payment was successful
@@ -126,7 +126,7 @@ const success = async(req, res)=>{
                   return res.sendStatus(500);
                 }
                 // Payment saved successfully
-                res.send('success');
+                res.send({success:true});
               });
 
             }

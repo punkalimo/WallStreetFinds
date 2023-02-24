@@ -94,6 +94,7 @@ const myPortfolios = async (req, res)=>{
                         dayta.push({
                             "name":portfolios[i].name,
                             "_id": portfolios[i]._id,
+                            "stocks": portfolios[i].stocks,
                             "Created": portfolios[i].createdAt,
                             "Last Edited": portfolios[i].updatedAt
                         })
@@ -175,6 +176,7 @@ const viewPortfolio = async (req, res)=>{
                           });
                 }
                 console.log(results)
+                res.send(results);
                 //res.send(port)
                 
                 
