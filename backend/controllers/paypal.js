@@ -38,15 +38,9 @@ const subscribe = async (req, res)=>{
                   'payment_method': 'paypal'
                 },
                 'redirect_urls': {
-                  'development': {
-                    'return_url': 'https://localhost:3000/subscription/success',
-                    'cancel_url': 'https://localhost:3000/subscription/cancel'
-                  },
-                  'production': {
                     'return_url': 'https://wallstreetfinds.netlify.app/subscription/success',
                     'cancel_url': 'https://wallstreetfinds.netlify.app/subscription/cancel'
-                  }
-                }[process.env.NODE_ENV || 'development'],
+                },
                 'transactions': [{
                   'amount': {
                     'total': req.body.price,

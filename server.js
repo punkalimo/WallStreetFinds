@@ -6,6 +6,8 @@ const session = require('express-session');
 const cookies = require('cookie-parser');
 const bodyParser = require('body-parser');
 const { StreamApi } = require('financial-news-api');
+const WebSocket = require('ws');
+const axios = require('axios');
 const cors = require('cors');
 const app = express();
 dotenv.config();
@@ -29,16 +31,19 @@ app.use(session({
 }));
 
 //News API 
-const API_KEY = 'fa71713a2541481a94c5d0e961cd1c7fa04067302fa64f5795e005c778b7b405';
-
-const streamApi = StreamApi(API_KEY);
-
-streamApi.on('articles', (articles)=> console.log(articles[0].title));
-streamApi.on('error', (err)=> console.log('Connection error' + err));
-streamApi.on('open', ()=> console.log('Connection open'));
-streamApi.on('close', ()=> console.log('Connection closed'));
 
 
 
+// Set up a listener for incoming HTTP connections
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, console.log(`server started on ${PORT}`));
+const httpServer = app.listen(PORT, () => {
+  console.log('Server running on port 3000');
+});
+
+// Set up a listener for WebSocket connections and associate them with the HTTP server
+httpServer.on('upgrade', (request, socket, head) => {
+  server.handleUpgrade(request, socket, head, socket => {
+    server.emit('connection', socket, request);
+  });
+});
+

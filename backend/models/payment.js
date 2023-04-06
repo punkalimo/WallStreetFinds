@@ -8,6 +8,7 @@ const paymentSchema = new mongoose.Schema({
   paymentAmount: Number,
   paymentCurrency: String,
   paymentStatus: String,
+  paymentType: String,
   createTime: { type: Date, default: Date.now }
 });
 
