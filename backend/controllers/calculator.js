@@ -1,4 +1,4 @@
-const { getCurrentRevenue,getRevenueGrowth, getNetProfitGrowth, getSharesOutstanding, getSharesOutstandingGrowthFraction, getEarningsPerShare, getForwardPE, getScreener }  = require('./calculator-controller/calculator.js');
+const { estimateEPS, calculateScore,getCurrentRevenue,getRevenueGrowth, getNetProfitGrowth, getSharesOutstanding, getSharesOutstandingGrowthFraction, getEarningsPerShare, getForwardPE, getScreener }  = require('./calculator-controller/calculator.js');
 const getStock = require('./calculator-controller/scapper');
 
 
@@ -17,8 +17,27 @@ const currentRevenue = async(req,res)=>{
 
 const stockData = async(req, res)=>{
     getStock(req.body.symbol).then((data) => {
-        console.log(data);
-        res.send(data);
+       const score = calculateScore(data);
+       const eps = estimateEPS(data)
+       console.log(eps);
+
+    
+       console.log(data);
+       const response = {
+        'Stock Score is': score,
+        'Revenue':data['Revenue'],
+        'Revenue Growth Past Years':'',
+        'Net Profit':data['Net Profit'],
+        'Shares Outstanding':data['Shares Outstanding'],
+        'Shares Outstanding Growth':'',
+        'Earnings Per Share':data['EPS'],
+        'Intrinsic Value':'',
+        'EXPECTED RATE OF RETURN TOTAL':'',
+        'ANNUALISED %':''
+       }
+       res.send(response);
+
+        
       }).catch((err) => {
         console.error(err);
       });

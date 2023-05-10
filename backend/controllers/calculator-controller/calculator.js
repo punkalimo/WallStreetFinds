@@ -1,6 +1,6 @@
-const { reject } = require('lodash');
-const { resolve } = require('path');
-const request = require('request');
+const axios = require('axios');
+const cheerio = require('cheerio');
+
 
 const apiKey = 'WW5SNUHV8Q4VS7WS';
 
@@ -285,9 +285,140 @@ const getRevenueGrowth = (symbol, callback) => {
     });
     
   }
+ 
+  const  estimateEPS = async (data)=> {
+    const epsTTM = parseFloat(data['EPS (ttm)']);
+    const epsNextY = parseFloat(data['EPS next Y']);
+    const epsGrowthRate = parseFloat(data['EPS next 5Y']) / 100;
+  
+    const epsArray = [epsTTM];
+  
+    for (let i = 1; i <= 4; i++) {
+      const epsNextYear = epsArray[i - 1] * (1 + epsGrowthRate);
+      epsArray.push(epsNextYear);
+    }
+  
+    const epsData = {};
+  
+    for (let i = 0; i < epsArray.length; i++) {
+      const epsYear = i + 1;
+      const epsValue = epsArray[i].toFixed(2);
+      epsData[`EPS ${epsYear}Y`] = epsValue;
+    }
+  
+    return epsData;
+}
+
+  
+  const calculateScore =(data)=> {
+    for (const key in data) {
+      if (data[key] === '-') {
+        data[key] = '0';
+      }
+    }
+
+    let score = 0;
+  
+    if (parseFloat(data['Fwd P/E']) < parseFloat(data['P/E'])){
+      
+      score += 1;
+    } 
+    if ( parseFloat(data['Fwd P/E']) < 15) {
+      score += 1;
+    }
+    else if (parseFloat(data['Fwd P/E']) < 20) {
+      score += 0.5;
+    }
+    if (parseFloat(data['PEG']) < 1) {
+      score += 1;
+    }
+    else if (parseFloat(data['PEG']) < 2) {
+      score += 0.5;
+    }
+    console.log(parseFloat(data['P/S']))
+    if (parseFloat(data['P/S']) < 2) {
+      score += 1;
+    }
+    else if (parseFloat(data['P/S']) < 3) {
+      score += 0.5;
+    }
+    if (parseFloat(data['P/B']) < 3) {
+      score += 1;
+    }
+    else if (parseFloat(data['P/B']) < 5) {
+      score += 0.5;
+    }
+    if (parseFloat(data['P/C']) !== '-' && parseFloat(data['P/C']) < 5) {
+      score += 1;
+    }
+    else if (data['P/C'] !== '-' && parseFloat(data['P/C']) < 10) {
+      score += 0.5;
+    }
+    if (data['P/FCF'] !== '-' && parseFloat(data['P/FCF']) < 15) {
+      score += 1;
+    }
+    else if (data['P/FCF'] !== '-' && parseFloat(data['P/FCF']) < 25) {
+      score += 0.5;
+    }
+    if (data['Dividend'] !== '-' && parseFloat(data['Dividend']) > 3) {
+      score += 1;
+    }
+    else if (data['Dividend'] !== '-' && parseFloat(data['Dividend']) > 1.5) {
+      score += 0.5;
+    }
+    if (data['EPS'] > 0) {
+      score += 1;
+    }
+    if (data['EPS this Y'] !== '-' && parseFloat(data['EPS this Y']) > 20) {
+      score += 1;
+    }
+    else if (data['EPS'] !== '-' && parseFloat(data['EPS']) > 10) {
+      score += 0.5;
+    }
+    if (data['EPS next 5Y'] !== '-' && parseFloat(data['EPS next 5Y']) > 30) {
+      score += 1;
+    }
+    else if (data['EPS next 5Y'] !== '-' && parseFloat(data['EPS next 5Y']) > 15) {
+      score += 0.5;
+    }
+    if (data['Sales Q/Q'] !== '-' && parseFloat(data['Sales Q/Q']) > 20) {
+      score += 1;
+    }
+    else if (data['Sales Q/Q'] !== '-' && parseFloat(data['Sales Q/Q']) > 5) {
+      score += 0.5;
+    }
+    if (data['RO'] !== '-' && parseFloat(data['ROE']) > 20) {
+      score += 1;
+    }
+    else if (data['ROE'] !== '-' && parseFloat(data['ROE']) > 10) {
+      score += 0.5;
+    }
+    if (data['Curr R'] !== '-' && parseFloat(data['Curr R']) > 2) {
+      score += 1;
+    }
+    else if (data['Curr R'] !== '-' && parseFloat(data['Curr R']) > 1) {
+      score += 0.5;
+    }
+    if (data['LTDebt/Eq'] !== '-' && parseFloat(data['LTDebt/Eq']) < 0.1) {
+      score += 1;
+    } else if (data['LTDebt/Eq'] !== '-' && parseFloat(data['LTDebt/Eq']) < 0.35) {
+      score += 0.5;
+    }
+  
+    if (data['Debt/Eq'] !== '-' && parseFloat(data['Debt/Eq']) < 0.1) {
+      score += 1;
+    } else if (data['Debt/Eq 0.5 point'] !== '-' && parseFloat(data['Debt/Eq']) < 0.35) {
+      score += 0.5;
+    }
+  
+    if (data['Profit M'] !== '-' && parseFloat(data['Profit M']) > 10) {
+      score += 1;
+    } else if (data['Profit M'] !== '-' && parseFloat(data['Profit M']) > 0) {
+      score += 0.5;
+    }
   
   
+    return score;
+  }
   
-  
-  
-module.exports = { getRevenueGrowth, getCurrentRevenue, getNetProfitGrowth, getSharesOutstanding, getSharesOutstandingGrowthFraction, getEarningsPerShare, getForwardPE, getScreener }
+module.exports = { estimateEPS, calculateScore,getRevenueGrowth, getCurrentRevenue, getNetProfitGrowth, getSharesOutstanding, getSharesOutstandingGrowthFraction, getEarningsPerShare, getForwardPE, getScreener }

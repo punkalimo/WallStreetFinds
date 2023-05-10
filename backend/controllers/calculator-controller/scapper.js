@@ -1,7 +1,7 @@
 const finviz = require('../calculator-controller/backEndScrapper');
 const axios = require('axios');
 
-function calculateScore(data) {
+/*function calculateScore(data) {
     let score = 0;
   
     // P/E ratio
@@ -77,7 +77,7 @@ function calculateScore(data) {
     return score;
   }
   
-
+*/
 const getStock = async(symbol)=> {
     let stockData={}
     try {
@@ -86,39 +86,52 @@ const getStock = async(symbol)=> {
         
     await finviz.getStockData(symbol)
     .then(data => {
+     const calculateNetProfit=(data)=> {
+        const sales = parseFloat(data.Sales.replace(/,/g, ''));
+        console.log(sales)
+        const profitMargin = parseFloat(data['Profit Margin'].replace(/%/g, '')) / 100;
+        console.log(data['Profit Margin'])
+        const netProfit = sales * profitMargin;
+        return netProfit;
+      }
+      console.log(calculateNetProfit(data));
       stockData = {
-        Ticker: symbol,
-        Company: quote.companyName,
-        Industry: quote.industry,
-        Country: quote.country,
+        'Ticker': symbol,
+        'Company': quote.companyName,
+        'Industry': quote.industry,
+        'Country': quote.country,
         "Market Cap": data["Market Cap"],
         "P/E": data["P/E"],
         "Fwd P/E": data["Forward P/E"],
-        PEG: data.PEG,
+        'PEG': data.PEG,
         "P/S": data["P/S"],
         "P/B": data["P/B"],
         "P/C": data["P/C"],
         "P/FCF": data["P/FCF"],
-        Dividend: data.Dividend,
-        EPS: data["EPS (ttm)"],
+        'Dividend': `${data.Dividend}`,
+        'EPS': data["EPS (ttm)"],
         "EPS this Y": data["EPS this Y"],
         "EPS next Y": data["EPS next Y"],
         "EPS past 5Y": data["EPS past 5Y"],
         "EPS next 5Y": data["EPS next 5Y"],
         "Sales past 5Y": data["Sales past 5Y"],
         "Sales Q/Q": data["Sales Q/Q"],
-        Outstanding: data["Shs Outstand"],
+        'Outstanding': data["Shs Outstand"],
         "Float Short": data["Shs Float"],
-        ROE: data.ROE,
+        'ROE': data.ROE,
         "Curr R": data["Current Ratio"],
         "LTDebt/Eq": data["LT Debt/Eq"],
         "Debt/Eq": data["Debt/Eq"],
         "Profit M": data["Profit Margin"],
-        RSI: data["RSI (14)"],
-        Price: data.Price
+        'RSI': data["RSI (14)"],
+        'Price': data.Price,
+        'Revenue':data['Sales'],
+        'Shares Outstanding':data['Shs Float'],
+        'Net Profit': calculateNetProfit(data),
+        'EPS (ttm)':data['EPS (ttm)']
       };
-      console.log(stockData);
-      console.log(calculateScore(stockData));
+      console.log(data);
+     // console.log(calculateScore(stockData));
     })
     .catch(err => console.error(err.stack ? err.stack : err));
     
